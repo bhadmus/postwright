@@ -1,0 +1,28 @@
+{
+  "name": "postman-playwright",
+  "version": "1.0.0",
+  "description": "Convert Postman Collections to Playwright scripts",
+  "main": "index.js",
+  "bin": {
+    "post-wright": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhadmus/postman-playwright.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bhadmus/postman-playwright/issues"
+  },
+  "homepage": "https://github.com/bhadmus/postman-playwright#readme",
+  "dependencies": {
+    "@playwright/test": "^1.45.3",
+    "playwright": "^1.45.3",
+    "commander": "12.1.0"
+  }
+}
