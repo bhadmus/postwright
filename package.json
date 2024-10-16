@@ -22,7 +22,10 @@
   "homepage": "https://github.com/bhadmus/postman-playwright#readme",
   "dependencies": {
     "@playwright/test": "^1.45.3",
-    "playwright": "^1.45.3",
-    "commander": "12.1.0"
+    "acorn": "^8.12.1",
+    "acorn-walk": "^8.3.4",
+    "commander": "12.1.0",
+    "path": "0.12.7",
+    "playwright": "^1.45.3"
   }
 }

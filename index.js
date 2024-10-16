@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-
 const { program } = require('commander');
 const path = require('path');
-const { convertPostmanToPlaywright } = require('./src/converter');
+const { convertPostmanToPlaywright } = require('./src/converter.js');
 const packageJson = require('./package.json');
 
 program
