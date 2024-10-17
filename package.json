@@ -1,10 +1,10 @@
 {
   "name": "postman-playwright",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha",
   "description": "Convert Postman Collections to Playwright scripts",
   "main": "index.js",
   "bin": {
-    "post-wright": "./index.js"
+    "postWright": "./index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
