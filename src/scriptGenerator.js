@@ -155,6 +155,9 @@ function generatePlaywrightTest(item, folderPath, outputDir) {
     }
   }
 
+  // Check if url and url.raw exist before using it
+  const requestUrl = url && url.raw ? replaceVariables(url.raw) : "undefined_url";
+
   const relativePath = path.relative(folderPath, outputDir).replace(/\\/g, "/");
   const variablesImport = relativePath
     ? `import { variables } from '${relativePath}/variables.js';`
@@ -168,9 +171,7 @@ test('${name}', async ({ request }) => {
 ${preRequestScript}
   const startTime = Date.now();
 
-  const response = await request.${method.toLowerCase()}('${replaceVariables(
-    url.raw
-  )}'${
+  const response = await request.${method.toLowerCase()}('${requestUrl}'${
     Object.keys(requestOptions).length > 0
       ? `, ${JSON.stringify(requestOptions, null, 2)}`
       : ""
@@ -180,6 +181,7 @@ ${postResponseScript}
 });
 `;
 }
+
 
 async function processItem(item, parentPath = "", outputDir) {
   if (!outputDir) {
