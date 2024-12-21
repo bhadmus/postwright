@@ -25,10 +25,10 @@ To convert to a javascript extension, do the following:
     - `postwright convert <location-of-saved-postman-collection>`
 
 - You can alternatively run any of the following from any location in your terminal.
-    - `postwright -c <location-of-saved-postman-collection> -o <preferred-location-to-save-the-converted-script` 
-    - `postwright --convert <location-of-saved-postman-collection> --output <preferred-location-to-save-the-converted-script`
-    - `postwright -c <location-of-saved-postman-collection> -o <preferred-location-to-save-the-converted-script -f js` 
-    - `postwright --convert <location-of-saved-postman-collection> --output <preferred-location-to-save-the-converted-script --format js`
+    - `postwright -c <location-of-saved-postman-collection> -o <preferred-location-to-save-the-converted-script>` 
+    - `postwright --convert <location-of-saved-postman-collection> --output <preferred-location-to-save-the-converted-script>`
+    - `postwright -c <location-of-saved-postman-collection> -o <preferred-location-to-save-the-converted-script> -f js` 
+    - `postwright --convert <location-of-saved-postman-collection> --output <preferred-location-to-save-the-converted-script> --format js`
 
 > [!NOTE]
 > The default extension is Javascript so it isn't mandatory to add the flag `-f` or `--format` to specify the extension if you want to convert to Javascript.
@@ -39,15 +39,14 @@ To convert to a javascript extension, do the following:
 To convert to a typescript extension, do the following:
 
 Create a folder and navigate into it then run any of the following:
-
-    - `postwright -c <location-of-saved-postman-collection> -f ts`
+    - `postwright -c <location-of-saved-postman-collection> -f ts` 
     - `postwright --convert <location-of-saved-postman-collection> --format ts`
-    - `postwright convert <location-of-saved-postman-collection> -f ts`
+    - `postwright convert <location-of-saved-postman-collection> --format ts`
 
 - You can alternatively run any of the following from any location in your terminal.
-    - `postwright -c <location-of-saved-postman-collection> -o <preferred-location-to-save-the-converted-script -f ts` 
-    - `postwright --convert <location-of-saved-postman-collection> --output <preferred-location-to-save-the-converted-script --format ts`
-    - `postwright convert <location-of-saved-postman-collection> --output <preferred-location-to-save-the-converted-script --format ts`
+    - `postwright -c <location-of-saved-postman-collection> -o <preferred-location-to-save-the-converted-script> -f ts` 
+    - `postwright --convert <location-of-saved-postman-collection> --output <preferred-location-to-save-the-converted-script> --format ts`
+    - `postwright convert <location-of-saved-postman-collection> --output <preferred-location-to-save-the-converted-script> --format ts`
 
 ### What does it do presently?
 ---
