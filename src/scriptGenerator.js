@@ -5,6 +5,9 @@ const crypto = require("crypto");
 let variables = {};
 let itemCounter = 0;
 let convertedScripts = new Map();
+let variablesJsPath;
+let fileName;
+let variableEntries;
 
 async function loadVariables(outputDir) {
   if (!outputDir) {
@@ -22,11 +25,13 @@ async function loadVariables(outputDir) {
   }
 }
 
-async function saveVariables(outputDir) {
+async function saveVariables(outputDir, format) {
   if (!outputDir) {
     console.error("Output directory is undefined");
     return;
   }
+
+  // Save as JSON
   const variablesFilePath = path.join(outputDir, "variables.json");
   await fs.writeFile(
     variablesFilePath,
@@ -51,10 +56,18 @@ function convertPreRequestScript(script) {
       line.includes("pm.environment.set") ||
       line.includes("pm.globals.set")
     ) {
-      const match = line.match(/set$$"(.+?)",\s*(.+?)$$/);
+      const match = line.match(/set\("(.+?)",\s*(.+?)\)/);
       if (match) {
         const [, key, value] = match;
-        convertedScript += `  variables['${key}'] = ${value};\n`;
+        convertedScript += `  variables['${key}'] : ${value};\n`;
+        variableEntries = Object.entries(variables)
+          .map(([key, value]) => {
+            const valueType = typeof value;
+            const formattedValue =
+              valueType === "string" ? `'${value}'` : JSON.stringify(value);
+            return `  ${key}: ${formattedValue}`;
+          })
+          .join(",\n");
       }
     } else {
       convertedScript += `  ${line}\n`;
@@ -107,8 +120,7 @@ function convertPostResponseScript(script) {
         });\n`;
       } else if (line.includes("= pm.response.json()")) {
         jsonAssignmentFound = true;
-      } 
-      
+      }
     }
   });
 
@@ -116,12 +128,13 @@ function convertPostResponseScript(script) {
   return convertedScript;
 }
 
-function generatePlaywrightTest(item, folderPath, outputDir) {
+function generatePlaywrightTest(item, folderPath, outputDir, useTypeScript) {
   const { name, request, event } = item;
   const { method, url, header, body } = request;
 
   let preRequestScript = "";
   let postResponseScript = "";
+  let variablesImport;
 
   if (event) {
     const preRequestEvent = event.find((e) => e.listen === "prerequest");
@@ -155,35 +168,40 @@ function generatePlaywrightTest(item, folderPath, outputDir) {
     }
   }
 
-  // Check if url and url.raw exist before using it
-  const requestUrl = url && url.raw ? replaceVariables(url.raw) : "undefined_url";
-
+  const requestUrl =
+    url && url.raw ? replaceVariables(url.raw) : "undefined_url";
   const relativePath = path.relative(folderPath, outputDir).replace(/\\/g, "/");
-  const variablesImport = relativePath
-    ? `import { variables } from '${relativePath}/variables.js';`
-    : `import { variables } from './variables.js';`;
+
+  variablesImport = `import { variables } from './variables.${
+    useTypeScript === "ts" ? "ts" : "js"
+  }';`;
 
   return `
-import { test, expect } from '@playwright/test';
+import { test, expect ${
+    useTypeScript === "ts" ? ", APIRequestContext" : ""
+  } } from '@playwright/test';
 ${variablesImport}
+${
+  useTypeScript === "ts"
+    ? "type TestContext = { request: APIRequestContext };"
+    : ""
+}
 
-test('${name}', async ({ request }) => {
+test('${name}', async ({ request }${
+    useTypeScript === "ts" ? ": TestContext" : ""
+  }) => {
 ${preRequestScript}
   const startTime = Date.now();
-
-  const response = await request.${method.toLowerCase()}('${requestUrl}'${
-    Object.keys(requestOptions).length > 0
-      ? `, ${JSON.stringify(requestOptions, null, 2)}`
-      : ""
-  });
+  const response = await request.${method.toLowerCase()}('${
+    url.raw || "undefined_url"
+  }');
   const responseTime = Date.now() - startTime;
 ${postResponseScript}
 });
-`;
+  `;
 }
 
-
-async function processItem(item, parentPath = "", outputDir) {
+async function processItem(item, parentPath = "", outputDir, useTypeScript) {
   if (!outputDir) {
     console.error("Output directory is undefined");
     return;
@@ -192,27 +210,39 @@ async function processItem(item, parentPath = "", outputDir) {
 
   if (item.item) {
     // This is a folder
-    const folderPath = path.join(
+    folderPath = path.join(
       parentPath,
       `${itemNumber}_${item.name.replace(/[^a-z0-9]/gi, "_").toLowerCase()}`
     );
     await fs.mkdir(folderPath, { recursive: true });
 
     for (const subItem of item.item) {
-      await processItem(subItem, folderPath, outputDir);
+      await processItem(subItem, folderPath, outputDir, useTypeScript);
     }
   } else if (item.request) {
     // This is a request
-    const testScript = generatePlaywrightTest(item, parentPath, outputDir);
-    const fileName = `${itemNumber}_${item.name
-      .replace(/[^a-z0-9]/gi, "_")
-      .toLowerCase()}.spec.js`;
+    const testScript = generatePlaywrightTest(
+      item,
+      folderPath,
+      outputDir,
+      useTypeScript
+    );
+
+    if (useTypeScript === "ts") {
+      fileName = `${itemNumber}_${item.name
+        .replace(/[^a-z0-9]/gi, "_")
+        .toLowerCase()}.spec.ts`;
+    } else {
+      fileName = `${itemNumber}_${item.name
+        .replace(/[^a-z0-9]/gi, "_")
+        .toLowerCase()}.spec.js`;
+    }
     const filePath = path.join(parentPath, fileName);
     await fs.writeFile(filePath, testScript);
   }
 }
 
-async function processCollection(collection, outputDir) {
+async function processCollection(collection, outputDir, useTypeScript) {
   if (!outputDir) {
     throw new Error("Output directory is undefined");
   }
@@ -227,20 +257,20 @@ async function processCollection(collection, outputDir) {
   }
 
   itemCounter = 0;
-  convertedScripts.clear(); // Clear the converted scripts before processing a new collection
+  convertedScripts.clear(); 
   for (const item of collection.item) {
-    await processItem(item, outputDir, outputDir);
+    await processItem(item, outputDir, outputDir, useTypeScript);
   }
 
   await saveVariables(outputDir);
 
-  // Create a variables.js file to export the variables
-  const variablesJsContent = `export const variables = ${JSON.stringify(
-    variables,
-    null,
-    2
-  )};`;
-  const variablesJsPath = path.join(outputDir, "variables.js");
+  const variablesJsContent = `export const Variables = {\n${variableEntries}\n};\n`;
+
+  if (useTypeScript === "ts") {
+    variablesJsPath = path.join(outputDir, "variables.ts");
+  } else {
+    variablesJsPath = path.join(outputDir, "variables.js");
+  }
   await fs.writeFile(variablesJsPath, variablesJsContent);
 }
 
