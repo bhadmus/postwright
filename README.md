@@ -2,7 +2,7 @@
 
 - [Installation](##installation)
 - [Usage](##usage)
-- [What does it do presently?](#what-does-it-do-presently)
+- [What does it do presently?](##what-does-it-do-presently)
 
 ## Convert your postman collections to playwright scripts.
 ---
