@@ -37,9 +37,12 @@ To convert to a javascript extension, do the following:
 - [ ] **Convert to Typescript**
 
 To convert to a typescript extension, do the following:
-    - `postwright -c <location-of-saved-postman-collection>  -f ts` 
+
+- Create a folder and navigate into it then run any of the following:
+
+    - `postwright -c <location-of-saved-postman-collection> -f ts`
     - `postwright --convert <location-of-saved-postman-collection> --format ts`
-    - `postwright convert <location-of-saved-postman-collection>  --format ts`
+    - `postwright convert <location-of-saved-postman-collection> -f ts`
 
 - You can run any of the following from any location in your terminal.
     - `postwright -c <location-of-saved-postman-collection> -o <preferred-location-to-save-the-converted-script> -f ts` 
