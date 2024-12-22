@@ -25,7 +25,7 @@ async function loadVariables(outputDir) {
   }
 }
 
-async function saveVariables(outputDir, format) {
+async function saveVariables(outputDir) {
   if (!outputDir) {
     console.error("Output directory is undefined");
     return;
