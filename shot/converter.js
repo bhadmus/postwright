@@ -4,7 +4,7 @@ const { processCollection } = require("./scriptGenerator.js");
 
 async function convertPostmanToPlaywright(
   postmanCollectionPath,
-  outputDir = path.join(process.cwd(), 'test'),
+  outputDir = process.cwd(),
   format = "js"// Default to 'js' (JavaScript)
 ) {
   try {
@@ -16,7 +16,6 @@ async function convertPostmanToPlaywright(
 
     let itemCounter = 0;
         await processCollection(postmanCollection, outputDir, format);
-        await createPackageJson(outputDir);
 
     // Create tsconfig.json if TypeScript is chosen
     if (format === "ts") {
@@ -53,32 +52,6 @@ async function createTsConfig(outputDir) {
     "utf8"
   );
   console.log("tsconfig.json created.");
-}
-
-async function createPackageJson(outputDir){
-  const packageJsonPath = path.join(outputDir, 'package.json');
-
-  const packageJsonContent = {
-    "name": "postman-to-playwright",
-    "version": "1.0.0",
-    "description": "Converts postman collection to playwright scripts",
-    "main": "index.js",
-    "scripts": {
-      "test": "npx playwright test"
-    },
-    "devDependencies": {
-      "playwright": "latest",
-      "@playwright/test": "latest"
-    }
-
-  }
-
-  await fs.writeFile(
-    packageJsonPath,
-    JSON.stringify(packageJsonContent, null, 2),
-    "utf8"
-  );
-  console.log("package.json created.");
 }
 
 module.exports = { convertPostmanToPlaywright };
