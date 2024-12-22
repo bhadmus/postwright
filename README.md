@@ -1,8 +1,8 @@
 ![image](shot/banners.jpg)
 
-- [Installation](##installation)
-- [Usage](##usage)
-- [What does it do presently?](##what-does-it-do-presently)
+- [Installation](#installation)
+- [Usage](#usage)
+- [What does it do presently?](#what-does-it-do-presently)
 
 ## Convert your postman collections to playwright scripts.
 ---
