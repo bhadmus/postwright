@@ -1,6 +1,6 @@
 {
   "name": "postwright",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Convert Postman Collections to Playwright scripts",
   "main": "index.js",
   "bin": {

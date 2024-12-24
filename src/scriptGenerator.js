@@ -192,9 +192,11 @@ test('${name}', async ({ request }${
   }) => {
 ${preRequestScript}
   const startTime = Date.now();
-  const response = await request.${method.toLowerCase()}('${
-    url.raw || "undefined_url"
-  }');
+  const response = await request.${method.toLowerCase()}('${requestUrl}'${
+      Object.keys(requestOptions).length > 0
+        ? `, ${JSON.stringify(requestOptions, null, 2)}`
+        : ""
+    });
   const responseTime = Date.now() - startTime;
 ${postResponseScript}
 });
