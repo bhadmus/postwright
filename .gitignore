@@ -2,3 +2,5 @@ node_modules/
 .DS_Store
 test.json
 test2.json
+.vscode/
+.idea/
