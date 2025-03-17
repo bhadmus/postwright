@@ -128,7 +128,7 @@ function convertPostResponseScript(script) {
   return convertedScript;
 }
 
-function generatePlaywrightTest(item, folderPath, outputDir, useTypeScript) {
+function generatePlaywrightTest(item, useTypeScript) {
   const { name, request, event } = item;
   const { method, url, header, body } = request;
 
@@ -170,7 +170,7 @@ function generatePlaywrightTest(item, folderPath, outputDir, useTypeScript) {
 
   const requestUrl =
     url && url.raw ? replaceVariables(url.raw) : "undefined_url";
-  const relativePath = path.relative(folderPath, outputDir).replace(/\\/g, "/");
+  // const relativePath = path.relative(folderPath, outputDir).replace(/\\/g, "/");
 
   variablesImport = `import { variables } from './variables.${
     useTypeScript === "ts" ? "ts" : "js"
@@ -212,21 +212,19 @@ async function processItem(item, parentPath = "", outputDir, useTypeScript) {
 
   if (item.item) {
     // This is a folder
-    folderPath = path.join(
+    parentPath = path.join(
       parentPath,
       `${itemNumber}_${item.name.replace(/[^a-z0-9]/gi, "_").toLowerCase()}`
     );
-    await fs.mkdir(folderPath, { recursive: true });
+    await fs.mkdir(parentPath, { recursive: true });
 
     for (const subItem of item.item) {
-      await processItem(subItem, folderPath, outputDir, useTypeScript);
+      await processItem(subItem, parentPath, outputDir, useTypeScript);
     }
   } else if (item.request) {
     // This is a request
     const testScript = generatePlaywrightTest(
       item,
-      folderPath,
-      outputDir,
       useTypeScript
     );
 
